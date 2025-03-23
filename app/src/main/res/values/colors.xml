@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="app">#a93</color>
+    <color name="header">@color/light_cyan</color>
+
+    <color name="yellow">#EEEE00</color>
+    <color name="light_yellow">#EEEECC</color>
+    <color name="red">#EE0000</color>
+    <color name="light_red">#FF0000</color>
+    <color name="green">#00EE00</color>
+    <color name="chartreuse">#77EE00</color>
+    <color name="blue">#0000EE</color>
+    <color name="royal_blue">#47E</color>
+    <color name="tan">#FEA500</color>
+    <color name="purple">#BB11DD</color>
+    <color name="crimson">#DC143C</color>
+    <color name="teal">#0EE</color>
+    <color name="teal2">#5CB</color>
+    <color name="teal_blue">#367588</color>
+    <color name="teal_green">#264B56</color>
+    <color name="light_cyan">#4DB6AC</color>
+    <color name="sky_blue">#87CEEB</color>
+    <color name="orange">#EEA000</color>
+    <color name="cigar_brown">#6D4F4B</color>
+    <color name="desert_sand">#EDC9AF</color>
+    <color name="gold">#FFD700</color>
+
+    <color name="black">#000000</color>
+    <color name="dark_slate_gray">#2A4C4C</color>
+    <color name="gray">#7F7F7F</color>
+    <color name="silver">#BBBBBB</color>
+    <color name="floral_white">#EEE8DD</color>
+    <color name="white">#EEEEEE</color>
+    <color name="light_white">#FFFFFF</color>
+
+    <integer-array name="color_list">
+        <item>@color/crimson</item>
+        <item>@color/green</item>
+        <item>@color/yellow</item>
+        <item>@color/royal_blue</item>
+        <item>@color/orange</item>
+        <item>@color/purple</item>
+    </integer-array>
+</resources>

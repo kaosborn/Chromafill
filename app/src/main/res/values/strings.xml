@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Chromafill</string>
+    <string name="action_settings">SELECT ITEM 1</string>
+    <string name="home_fragment_label">Miles of Tiles</string>
+    <string name="home_ftr">Select your game</string>
+    <string name="minesweep_label">Minesweep</string>
+    <string name="chromafill_fragment_label">Chromafill</string>
+    <string name="play_game1">Play Chromafill</string>
+    <string name="play_game2">PLAY GAME 2</string>
+    <string name="reset">New game</string>
+    <string name="move_hdr">Moves</string>
+    <string name="score_hdr">Score</string>
+    <string name="high_hdr">High score</string>
+    <string name="low_moves_hdr">Low moves</string>
+</resources>
