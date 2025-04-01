@@ -12,7 +12,7 @@ import androidx.activity.viewModels
 import com.chromafill.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var appBarConfig: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private val vm: GridGamesViewModel by viewModels()
 
@@ -23,9 +23,9 @@ class MainActivity : AppCompatActivity() {
         setContentView (binding.root)
         setSupportActionBar (binding.toolbar)
 
-        val navController = findNavController (R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration (navController.graph)
-        setupActionBarWithNavController (navController, appBarConfiguration)
+        val navCon = findNavController (R.id.nav_host_fragment_content_main)
+        appBarConfig = AppBarConfiguration (navCon.graph)
+        setupActionBarWithNavController (navCon, appBarConfig)
 
         vm.loadColors (resources.getIntArray(R.array.color_list))
     }
@@ -44,6 +44,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController (R.id.nav_host_fragment_content_main)
-        return navController.navigateUp (appBarConfiguration) || super.onSupportNavigateUp()
+        return navController.navigateUp (appBarConfig) || super.onSupportNavigateUp()
     }
 }

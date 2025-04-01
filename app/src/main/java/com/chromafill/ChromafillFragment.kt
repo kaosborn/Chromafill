@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.chromafill.databinding.FragmentChromafillBinding
@@ -34,6 +35,7 @@ class ChromafillFragment : Fragment() {
 
     override fun onViewCreated (view:View, state:Bundle?) {
         super.onViewCreated (view, state)
+
         if (! vm.isGame())
             vm.newGame()
 
@@ -45,7 +47,7 @@ class ChromafillFragment : Fragment() {
         binding.buttonReset.setOnClickListener {
             vm.newGame()
             paintBoard()
-            vm.chooseColor (vm.at(vm.xRoot,vm.yRoot))
+            vm.colorChoiceValue = vm.at(vm.xRoot,vm.yRoot)
             redrawPalette (vm.at(vm.xRoot,vm.yRoot))
         }
 
@@ -82,8 +84,8 @@ class ChromafillFragment : Fragment() {
     }
 
     private fun makeBoard() {
-        for (y in 0..<vm.ySize.value!!)
-            for (x in 0..<vm.xSize.value!!) {
+        for (y in 0..<vm.dataHeight())
+            for (x in 0..<vm.dataWidth(y)) {
                 val v = TextView(requireContext())
                 v.setTextColor (ContextCompat.getColor(requireContext(),R.color.black))
                 v.id = View.generateViewId()
@@ -100,18 +102,21 @@ class ChromafillFragment : Fragment() {
     }
 
     private fun paintBoard() {
-        for (y in 0..<vm.ySize.value!!)
-            for (x in 0..<vm.xSize.value!!) {
-                val w = binding.board.getChildAt(y*vm.xSize.value!!+x) as TextView
+        var i = 0
+        for (y in 0..<vm.dataHeight())
+            for (x in 0..<vm.dataWidth(y)) {
+                val w = binding.board.getChildAt(i) as TextView
                 w.setBackgroundColor (vm.gameColors[vm.at(x,y)%vm.gameColors.size])
                 w.text = ""
+                i++
             }
     }
 
     private fun repaintBoard (oldColor:Int) {
-        for (y in 0..<vm.ySize.value!!)
-            for (x in 0..<vm.xSize.value!!) {
-                val w = binding.board.getChildAt(y*vm.xSize.value!!+x) as TextView
+        var i = 0
+        for (y in 0..<vm.dataHeight())
+            for (x in 0..<vm.dataWidth(y)) {
+                val w = binding.board.getChildAt(i) as TextView
                 //w.text = vm.rankAt(x,y).toString()
                 if (vm.rankAt(x,y)!=0) {
                     val oldLevel = vm.gameColors[oldColor]
@@ -139,18 +144,9 @@ class ChromafillFragment : Fragment() {
                                 w.text = ""
                         }
                         a7.start()
-
-//                        val a8 = ofInt(w,"backgroundColor",oldLevel,newLevel)
-//                        a8.startDelay = (vm.rankAt(x,y)*3+50).toLong()
-//                        a8.duration = 100
-//                        a8.setEvaluator (ArgbEvaluator())
-
-//                        val b1 = AnimatorSet()
-//                        b1.playSequentially(a7,a8)
-//                        b1.playTogether(a7,a8)
-//                        b1.start()
                     }
                 }
+                i++
             }
     }
 
@@ -182,7 +178,7 @@ class ChromafillFragment : Fragment() {
         vm.fill (thisChoiceIx)
         repaintBoard (targetColor)
 
-        if (vm.isOneColor())
+        if (vm.isMonochrome())
             vm.endGame()
         else {
             if (vm.colorChoice.value!=null && vm.colorChoice.value!!>=0) {
@@ -190,7 +186,7 @@ class ChromafillFragment : Fragment() {
                 priorChoice.isClickable = true
                 priorChoice.text = ""
             }
-            vm.chooseColor (thisChoiceIx)
+            vm.colorChoiceValue = thisChoiceIx
         }
     }
 }

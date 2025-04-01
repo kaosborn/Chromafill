@@ -14,12 +14,6 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
     val xRoot = 0
     val yRoot = 0
 
-    private val _xSize = MutableLiveData(newGameSize)
-    val xSize:LiveData<Int> = _xSize
-
-    private val _ySize = MutableLiveData(newGameSize)
-    val ySize:LiveData<Int> = _ySize
-
     private val _score = MutableLiveData(-1)
     val score:LiveData<Int> = _score
     private var scoreValue:Int
@@ -45,6 +39,11 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
         set (value) {
             _moves.value = value
             state[MOVES_KEY] = value
+            state[Y_SIZE_KEY] = dataHeight()
+            for (y in 0..<dataHeight()) {
+                state[DATA_KEY_PREFIX+y.toString()] = grid.getData(y)
+                state[ENUMS_KEY_PREFIX+y.toString()] = grid.getEnums(y)
+            }
         }
 
     private val _lowMoves = MutableLiveData(-1)
@@ -58,6 +57,16 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
 
     private val _colorChoice = MutableLiveData<Int?>(null)
     val colorChoice:LiveData<Int?> = _colorChoice
+    var colorChoiceValue:Int
+        get() =_colorChoice.value!!
+        set (value) {
+            if (value==null)
+                _colorChoice.value = null
+            else {
+                val c = value % gameColors.size
+                _colorChoice.value = if (c>=0) c else c + gameColors.size
+            }
+        }
 
     init {
         if (! this::gameColors.isInitialized) {
@@ -68,31 +77,25 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
 
         val data:MutableList<IntArray> = mutableListOf()
         val enums:MutableList<IntArray> = mutableListOf()
-
-        var xs = 0
-        while (true) {
-            val dr = state.get<IntArray>(DATA_KEY_PREFIX+data.size.toString()) ?: break
-            val er = state.get<IntArray>(ENUMS_KEY_PREFIX+data.size.toString()) ?: break
+        for (r in 0..<(state.get<Int>(Y_SIZE_KEY) ?: 0)) {
+            val dr = state.get<IntArray>(DATA_KEY_PREFIX+data.size.toString()) ?: throw IllegalArgumentException ("missing data row")
+            val er = state.get<IntArray>(ENUMS_KEY_PREFIX+data.size.toString()) ?: throw IllegalArgumentException ("missing enums row")
+            if (dr.size!=er.size)
+                throw IllegalArgumentException ("row size mismatch")
             data.add (dr)
             enums.add (er)
-            if (xs < data.size)
-                xs = data.size
         }
-
-        _ySize.value = data.size
-        _xSize.value = xs
 
         if (data.size>0) {
             grid = CellGrid (data, enums)
-
-            isWon = grid.isMonochrome()
+            isWon = grid.isConstant()
             if (! isWon)
                 _colorChoice.value = grid.at(xRoot,yRoot)
 
-            scoreValue = state.get<Int>(SCORE_KEY) ?: 0
-            highScoreValue = state.get<Int>(HIGH_SCORE_KEY) ?: 0
-            movesValue = state.get<Int>(MOVES_KEY) ?: 0
-            lowMovesValue = state.get<Int>(LOW_MOVES_KEY) ?: 0
+            _score.value = state.get<Int>(SCORE_KEY) ?: -1
+            _highScore.value = state.get<Int>(HIGH_SCORE_KEY) ?: 0
+            _moves.value = state.get<Int>(MOVES_KEY) ?: -1
+            _lowMoves.value = state.get<Int>(LOW_MOVES_KEY) ?: 0
         }
     }
 
@@ -102,6 +105,7 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
         private const val HIGH_SCORE_KEY = "HIGH_SCORE"
         private const val MOVES_KEY = "MOVES"
         private const val LOW_MOVES_KEY = "LOW_MOVES"
+        private const val Y_SIZE_KEY = "Y_SIZE"
         private const val DATA_KEY_PREFIX = "DATA_"
         private const val ENUMS_KEY_PREFIX = "ENUMS_"
     }
@@ -111,32 +115,32 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
         state[COLORS_KEY] = colors
     }
 
-    fun chooseColor (color:Int?) {
+    fun chooseColorXXX (color:Int?) {
         if (color==null)
             _colorChoice.value = null
         else {
-            var c = color%gameColors.size
-            if (c<0) c += gameColors.size
-            _colorChoice.value = c
+            val c = color % gameColors.size
+            _colorChoice.value = if (c>=0) c else c + gameColors.size
         }
     }
+
+    fun dataHeight() = grid.ySize
+    fun dataWidth (y:Int) = grid.getSize(y)
 
     fun isGame() = this::grid.isInitialized
     fun at (x:Int, y:Int) = grid.at(x,y)
     fun rankAt (x:Int, y:Int) = grid.rankAt(x,y)
     fun isContact (x:Int, y:Int) = grid.isContact(x,y)
-    fun isOneColor() = grid.isMonochrome()
+    fun isMonochrome() = grid.isConstant()
 
     fun newGame() {
         isWon = false
         grid = CellGrid (newGameSize,newGameSize)
         grid.randomize (gameColors.size)
-        _xSize.value = grid.xSize
-        _ySize.value = grid.ySize
-        movesValue = 0
-        scoreValue = 0
         grid.crawl4 (xRoot,yRoot,grid.at(xRoot,yRoot))
+        _score.value = 0
         addPoints (grid.maxEnumeration)
+        movesValue = 0
     }
 
     fun endGame() {
@@ -148,23 +152,13 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
 
     private fun addPoints (tileCount:Int) {
         scoreValue += tileCount * (tileCount + 1)
-        if (highScoreValue<scoreValue) {
+        if (highScoreValue < scoreValue)
             highScoreValue = scoreValue
-            state[HIGH_SCORE_KEY] = highScoreValue
-        }
-    }
-
-    private fun saveData() {
-        for (y in 0..<_ySize.value!!) {
-            state[DATA_KEY_PREFIX+y.toString()] = grid.getData(y)
-            state[ENUMS_KEY_PREFIX+y.toString()] = grid.getEnums(y)
-        }
     }
 
     fun fill (thisChoiceIx:Int): Int {
         val contacts = grid.flood4 (xRoot,yRoot,thisChoiceIx)
         movesValue++
-        saveData()
         addPoints (contacts)
         return grid.maxEnumeration
     }

@@ -7,7 +7,7 @@ class CellGrid() {
     var maxEnumeration = 0; private set
     var xSize = 0; private set
     var ySize = 0; private set
-    var area = 0; private set
+    private var area = 0
 
     constructor (xSize:Int, ySize:Int) : this() {
         this.xSize = xSize
@@ -63,25 +63,29 @@ class CellGrid() {
     fun at (x:Int, y:Int) = data[y][x]
     fun rankAt (x:Int, y:Int) = enums[y][x]
     fun isContact (x:Int, y:Int) = enums[y][x]>fillSize
-    fun isMonochrome() = area==maxEnumeration
-    fun getData (y:Int):IntArray = data[y]
-    fun getEnums (y:Int):IntArray = enums[y]
+    fun isConstant() = area==maxEnumeration
+    fun getSize (y:Int) = data[y].size
+    fun getData (y:Int): IntArray = data[y].copyOf()
+    fun getEnums (y:Int): IntArray = enums[y].copyOf()
 
-    fun randomize (depth:Int) { //TODO breaks if enums set
+    fun randomize (depth:Int) {
+        maxEnumeration = 0
         for (y in data.indices)
-            for (x in data[y].indices)
+            for (x in data[y].indices) {
                 data[y][x] = (0..<depth).random()
+                enums[y][x] = 0
+            }
     }
 
     fun isEquals (rval:MutableList<IntArray>): Boolean {
-        if (rval.size != data.size)
+        if (rval.size!=data.size)
             return false
         for (y in data.indices) {
             val dataRow = data[y]
-            if (dataRow.size != rval[y].size)
+            if (dataRow.size!=rval[y].size)
                 return false
             for (x in dataRow.indices)
-                if (dataRow[x] != rval[y][x])
+                if (dataRow[x]!=rval[y][x])
                     return false
         }
         return true
