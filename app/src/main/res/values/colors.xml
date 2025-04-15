@@ -2,6 +2,7 @@
 <resources>
     <color name="app">#a93</color>
     <color name="header">@color/light_cyan</color>
+    <color name="bar_fg">#411</color>
 
     <color name="yellow">#EEEE00</color>
     <color name="light_yellow">#EEEECC</color>

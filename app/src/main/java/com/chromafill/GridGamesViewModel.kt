@@ -9,15 +9,29 @@ import com.kaosborn.gridgames.CellGrid
 class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
     private lateinit var grid:CellGrid
     lateinit var gameColors:List<Int>; private set
-    private val newGameSize = 14
-    var isWon = false; private set
+    private val maxGameSize = 20
+    var isGameActive = false; private set
     val xRoot = 0
     val yRoot = 0
+
+    private val _boardSize = MutableLiveData(14)
+    val boardSize:LiveData<Int> = _boardSize
+    var boardSizeValue:Int = 14
+        get() = _boardSize.value!!
+        set (value) {
+            if (value in 1..maxGameSize) {
+                if (value!=field) {
+                    lowMovesValue = -1
+                }
+                _boardSize.value = value
+                state[Y_SIZE_KEY] = value
+            }
+        }
 
     private val _score = MutableLiveData(-1)
     val score:LiveData<Int> = _score
     private var scoreValue:Int
-        get() =_score.value!!
+        get() = _score.value!!
         set (value) {
             _score.value = value
             state[SCORE_KEY] = value
@@ -26,16 +40,16 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
     private val _highScore = MutableLiveData(0)
     val highScore:LiveData<Int> = _highScore
     private var highScoreValue:Int
-        get() =_highScore.value!!
+        get() = _highScore.value!!
         set (value) {
             _highScore.value = value
             state[HIGH_SCORE_KEY] = value
         }
 
     private val _moves = MutableLiveData(-1)
-    val moveCount:LiveData<Int> = _moves
-    private var movesValue:Int
-        get() =_moves.value!!
+    val moves:LiveData<Int> = _moves
+    var movesValue:Int
+        get() = _moves.value!!
         set (value) {
             _moves.value = value
             state[MOVES_KEY] = value
@@ -49,7 +63,7 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
     private val _lowMoves = MutableLiveData(-1)
     val lowMoves:LiveData<Int> = _lowMoves
     private var lowMovesValue:Int
-        get() =_lowMoves.value!!
+        get() = _lowMoves.value!!
         set (value) {
             _lowMoves.value = value
             state[LOW_MOVES_KEY] = value
@@ -57,8 +71,8 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
 
     private val _colorChoice = MutableLiveData<Int?>(null)
     val colorChoice:LiveData<Int?> = _colorChoice
-    var colorChoiceValue:Int
-        get() =_colorChoice.value!!
+    var colorChoiceValue:Int?
+        get() = _colorChoice.value!!
         set (value) {
             if (value==null)
                 _colorChoice.value = null
@@ -88,9 +102,10 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
 
         if (data.size>0) {
             grid = CellGrid (data, enums)
-            isWon = grid.isConstant()
-            if (! isWon)
+            if (! grid.isConstant()) {
+                isGameActive = true
                 _colorChoice.value = grid.at(xRoot,yRoot)
+            }
 
             _score.value = state.get<Int>(SCORE_KEY) ?: -1
             _highScore.value = state.get<Int>(HIGH_SCORE_KEY) ?: 0
@@ -115,15 +130,6 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
         state[COLORS_KEY] = colors
     }
 
-    fun chooseColorXXX (color:Int?) {
-        if (color==null)
-            _colorChoice.value = null
-        else {
-            val c = color % gameColors.size
-            _colorChoice.value = if (c>=0) c else c + gameColors.size
-        }
-    }
-
     fun dataHeight() = grid.ySize
     fun dataWidth (y:Int) = grid.getSize(y)
 
@@ -133,21 +139,22 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
     fun isContact (x:Int, y:Int) = grid.isContact(x,y)
     fun isMonochrome() = grid.isConstant()
 
-    fun newGame() {
-        isWon = false
-        grid = CellGrid (newGameSize,newGameSize)
+    fun initGame() {
+        grid = CellGrid (boardSizeValue,boardSizeValue)
         grid.randomize (gameColors.size)
         grid.crawl4 (xRoot,yRoot,grid.at(xRoot,yRoot))
         _score.value = 0
         addPoints (grid.maxEnumeration)
         movesValue = 0
+        colorChoiceValue = grid.at(xRoot,xRoot)
+        isGameActive = ! grid.isConstant()
     }
 
     fun endGame() {
         if (lowMovesValue<0 || lowMovesValue in 0..<movesValue)
             lowMovesValue = movesValue
-        isWon = true
-        _colorChoice.value =  null
+        isGameActive = false
+        colorChoiceValue = null
     }
 
     private fun addPoints (tileCount:Int) {

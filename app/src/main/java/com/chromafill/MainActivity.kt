@@ -16,8 +16,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val vm: GridGamesViewModel by viewModels()
 
-    override fun onCreate (state:Bundle?) {
-        super.onCreate (state)
+    override fun onCreate (savedInstanceState:Bundle?) {
+        super.onCreate (savedInstanceState)
 
         binding = ActivityMainBinding.inflate (layoutInflater)
         setContentView (binding.root)
