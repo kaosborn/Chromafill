@@ -20,20 +20,13 @@ open class ChromofillMenuProvider (private val view:View, private val vm:GridGam
                 val dlg = View.inflate (view.context, R.layout.settings_chromofill, null)
 
                 val newGameButton = dlg.findViewById<Button> (R.id.new_game_btn)
-                newGameButton.setOnClickListener {
-                    vm.initGame()
-//                    makeBoard()
-//                    paintBoard()
-//                    paintPalette (vm.at(vm.xRoot,vm.yRoot))
-                    //vm.movesValue = 0
-                    //TODO vm.newGame()
-                }
+                newGameButton.setOnClickListener { vm.initGame() }
 
                 val boardSizeView = dlg.findViewById<NumberPicker> (R.id.size_setting)
-                boardSizeView.minValue = 2
-                boardSizeView.maxValue = 14
-                boardSizeView.value = vm.boardSizeValue
-                boardSizeView.setOnValueChangedListener {_, _, q -> vm.boardSizeValue = q }
+                boardSizeView.minValue = 1
+                boardSizeView.maxValue = vm.maxGameSize
+                boardSizeView.value = vm.boardSize.value!!
+                boardSizeView.setOnValueChangedListener { _, _, q -> vm.boardSizeValue = q }
 
                 MaterialAlertDialogBuilder (view.context, R.style.SettingsDialog)
                     .setTitle(null)

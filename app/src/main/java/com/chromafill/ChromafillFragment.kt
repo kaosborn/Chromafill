@@ -15,7 +15,6 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.chromafill.databinding.FragmentChromafillBinding
 
@@ -35,27 +34,25 @@ class ChromafillFragment : Fragment() {
 
     override fun onViewCreated (view:View, state:Bundle?) {
         super.onViewCreated (view, state)
+
         requireActivity().addMenuProvider (ChromofillMenuProvider(view,vm), viewLifecycleOwner, Lifecycle.State.RESUMED)
-
-        if (! vm.isGame())
-            vm.initGame()
-
-        makePalette()
-
-        val colorChoiceChangeObserver = Observer<Int?> {
-            newColor -> onColorChoiceChange (newColor)
-        }
-        vm.colorChoice.observe (requireActivity(),colorChoiceChangeObserver)
 
         binding.buttonReset.setOnClickListener {
             vm.initGame()
-            makeBoard()
-            paintBoard()
-            paintPalette (vm.at(vm.xRoot,vm.yRoot))
+            vm.colorChoiceValue = if (! vm.isGameActiveValue) null else vm.at(vm.xRoot,vm.yRoot)
         }
 
-        makeBoard()
-        paintBoard()
+        makePalette()
+        if (! vm.isGame())
+            vm.initGame()
+        else
+            makeBoard()
+
+        vm.colorChoiceValue = if (! vm.isGameActiveValue) null else vm.at(vm.xRoot,vm.yRoot)
+
+        vm.colorChoice.observe (requireActivity()) { newVal -> onColorChoiceChange(newVal) }
+        vm.isGameActive.observe (requireActivity()) { newVal -> onGameActiveChange(newVal) }
+
     }
 
     override fun onResume() {
@@ -91,6 +88,7 @@ class ChromafillFragment : Fragment() {
             for (x in 0..<vm.dataWidth(y)) {
                 val v = TextView(requireContext())
                 v.setTextColor (ContextCompat.getColor(requireContext(),R.color.black))
+                v.setBackgroundColor (vm.gameColors[vm.at(x,y)%vm.gameColors.size])
                 v.id = View.generateViewId()
                 v.width = (resources.getDimension(R.dimen.cellTileSize)+0.5F).toInt()
                 v.height = (resources.getDimension(R.dimen.cellTileSize)+0.5F).toInt()
@@ -120,7 +118,6 @@ class ChromafillFragment : Fragment() {
         for (y in 0..<vm.dataHeight())
             for (x in 0..<vm.dataWidth(y)) {
                 val w = binding.board.getChildAt(i) as TextView
-                //w.text = vm.rankAt(x,y).toString()
                 if (vm.rankAt(x,y)!=0) {
                     val oldLevel = vm.gameColors[oldColor]
                     val newLevel = vm.gameColors[vm.at(x,y)%vm.gameColors.size]
@@ -159,21 +156,35 @@ class ChromafillFragment : Fragment() {
     }
 
     private fun onColorChoiceChange (selectedColorIx:Int?) {
-        val maxItems:Int
-        val ban0:String
-        if (! vm.isGameActive) {
-            maxItems = binding.palette.children.count()
-            ban0 = if (vm.isMonochrome()) "WINNER" else "LOSER "
-            for ((i,v) in binding.palette.children.withIndex()) {
-                if (i>=maxItems) break
-                v.isClickable = false
-                (v as Button).text = ban0[i%ban0.length].toString()
-            }
-        }
-        else {
+
+        if (vm.isGameActive.value==false)
+            paintBanner()
+        else
+        {
             val w = binding.palette.getChildAt(selectedColorIx ?: 0) as Button
             w.text = if (selectedColorIx==null) "0" else "X"
             w.isClickable = false
+        }
+    }
+
+    private fun onGameActiveChange (isActive:Boolean?) {
+        if (isActive==true) {
+            makeBoard()
+            paintPalette (vm.at(0,0)) //TODO move to observer
+        }
+        else if (vm.isMonochrome())
+            paintBanner()
+        else
+            vm.colorChoiceValue = null
+    }
+
+    private fun paintBanner() {
+        val banner = if (vm.isMonochrome()) "WINNER" else "LOSER "
+        val maxItems = binding.palette.children.count()
+        for ((i,v) in binding.palette.children.withIndex()) {
+            if (i>=maxItems) break
+            v.isClickable = false
+            (v as Button).text = banner[i%banner.length].toString()
         }
     }
 
@@ -184,7 +195,7 @@ class ChromafillFragment : Fragment() {
         repaintBoard (targetColor)
 
         if (vm.isMonochrome())
-            vm.endGame()
+            vm.isGameActiveValue = false
         else {
             if (vm.colorChoice.value!=null && vm.colorChoice.value!!>=0) {
                 val priorChoice = binding.palette.getChildAt(vm.colorChoice.value!!) as Button
