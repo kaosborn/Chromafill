@@ -1,14 +1,14 @@
 package com.chromafill
-
+import android.content.Context
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
-import androidx.activity.viewModels
 import com.chromafill.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -27,7 +27,16 @@ class MainActivity : AppCompatActivity() {
         appBarConfig = AppBarConfiguration (navCon.graph)
         setupActionBarWithNavController (navCon, appBarConfig)
 
+        val prefs = getPreferences (Context.MODE_PRIVATE)
+        if (prefs!=null)
+            vm.loadPrefs (prefs)
+
         vm.loadColors (resources.getIntArray(R.array.color_list))
+    }
+
+    override fun onPause() {
+        vm.savePrefs (getPreferences (MODE_PRIVATE))
+        super.onPause()
     }
 
     override fun onCreateOptionsMenu (menu:Menu): Boolean {
@@ -38,7 +47,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected (item:MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected (item)
         }
     }
 

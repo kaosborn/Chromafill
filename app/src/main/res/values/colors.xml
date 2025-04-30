@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="app">#a93</color>
-    <color name="header">@color/light_cyan</color>
+    <color name="app_bg">#a93</color>
     <color name="bar_fg">#411</color>
+    <color name="bar_bg">@color/light_cyan</color>
 
     <color name="yellow">#EEEE00</color>
     <color name="light_yellow">#EEEECC</color>

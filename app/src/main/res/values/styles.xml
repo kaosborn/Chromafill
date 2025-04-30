@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="paletteStyle" format="reference" />
+
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="paletteStyle">@style/Widget.MaterialComponents.Button.TextButton</item>
+    </style>
+
     <style name="SettingsDialog" parent="android:Theme.Dialog">
         <item name="android:windowNoTitle">true</item>
     </style>
 
-    <style name="BigText" parent="TextAppearance.AppCompat">>
+    <style name="BigText" parent="TextAppearance.AppCompat">
         <item name="android:textSize">24dp</item>
         <item name="android:textColor">#000</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="MedText" parent="TextAppearance.AppCompat">>
+    <style name="MedText" parent="TextAppearance.AppCompat">
         <item name="android:textSize">18dp</item>
         <item name="android:textColor">#000</item>
         <item name="android:textStyle">bold</item>

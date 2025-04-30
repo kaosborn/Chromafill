@@ -1,5 +1,4 @@
 package com.chromafill
-
 import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator.*
 import android.os.Bundle
@@ -8,7 +7,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -16,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.button.MaterialButton
 import com.chromafill.databinding.FragmentChromafillBinding
 
 class ChromafillFragment : Fragment() {
@@ -39,20 +38,21 @@ class ChromafillFragment : Fragment() {
 
         binding.buttonReset.setOnClickListener {
             vm.initGame()
+            makeBoard()
+            makePalette()
             vm.colorChoiceValue = if (! vm.isGameActiveValue) null else vm.at(vm.xRoot,vm.yRoot)
         }
 
-        makePalette()
         if (! vm.isGame())
             vm.initGame()
-        else
-            makeBoard()
+
+        makeBoard()
+        makePalette()
 
         vm.colorChoiceValue = if (! vm.isGameActiveValue) null else vm.at(vm.xRoot,vm.yRoot)
 
-        vm.colorChoice.observe (requireActivity()) { newVal -> onColorChoiceChange(newVal) }
-        vm.isGameActive.observe (requireActivity()) { newVal -> onGameActiveChange(newVal) }
-
+        vm.colorChoice.observe (viewLifecycleOwner) { newVal -> onColorChoiceChange(newVal) }
+        vm.isGameActive.observe (viewLifecycleOwner) { newVal -> onGameActiveChange(newVal) }
     }
 
     override fun onResume() {
@@ -61,8 +61,9 @@ class ChromafillFragment : Fragment() {
     }
 
     private fun makePalette() {
+        binding.palette.removeAllViews()
         for (i in 0..<vm.gameColors.size) {
-            val v = Button(requireContext())
+            val v = MaterialButton (requireContext(), null, R.attr.paletteStyle)
             val lp = LinearLayout.LayoutParams (LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
             lp.width = (resources.getDimension(R.dimen.paletteTileSize)+0.5F).toInt()
             lp.height = (resources.getDimension(R.dimen.paletteTileSize)+0.5F).toInt()
@@ -76,8 +77,8 @@ class ChromafillFragment : Fragment() {
 
     private fun paintPalette (lastChoiceIx:Int) {
         for (i in 0..<vm.gameColors.size) {
-            val w = binding.palette.getChildAt(i) as Button
-            w.isClickable = i!=lastChoiceIx
+            val w = binding.palette.getChildAt(i) as MaterialButton
+            w.isEnabled = i!=lastChoiceIx
             w.text = if (i!=lastChoiceIx) "" else "xx"
         }
     }
@@ -156,40 +157,37 @@ class ChromafillFragment : Fragment() {
     }
 
     private fun onColorChoiceChange (selectedColorIx:Int?) {
-
         if (vm.isGameActive.value==false)
             paintBanner()
         else
         {
-            val w = binding.palette.getChildAt(selectedColorIx ?: 0) as Button
+            val w = binding.palette.getChildAt(selectedColorIx ?: 0) as MaterialButton
             w.text = if (selectedColorIx==null) "0" else "X"
-            w.isClickable = false
+            w.isEnabled = false
         }
     }
 
     private fun onGameActiveChange (isActive:Boolean?) {
-        if (isActive==true) {
-            makeBoard()
-            paintPalette (vm.at(0,0)) //TODO move to observer
-        }
-        else if (vm.isMonochrome())
-            paintBanner()
-        else
-            vm.colorChoiceValue = null
+        if (isActive!=true)
+            if (vm.isMonochrome())
+                paintBanner()
+            else
+                vm.colorChoiceValue = null
     }
 
     private fun paintBanner() {
         val banner = if (vm.isMonochrome()) "WINNER" else "LOSER "
         val maxItems = binding.palette.children.count()
         for ((i,v) in binding.palette.children.withIndex()) {
-            if (i>=maxItems) break
-            v.isClickable = false
-            (v as Button).text = banner[i%banner.length].toString()
+            if (i>=maxItems)
+                break
+            v.isEnabled = false
+            (v as MaterialButton).text = banner[i%banner.length].toString()
         }
     }
 
     private fun paletteClickHandler (w:TextView, thisChoiceIx:Int) {
-        w.isClickable = false
+        w.isEnabled = false
         val targetColor = vm.at(vm.xRoot,vm.yRoot)
         vm.fill (thisChoiceIx)
         repaintBoard (targetColor)
@@ -198,8 +196,8 @@ class ChromafillFragment : Fragment() {
             vm.isGameActiveValue = false
         else {
             if (vm.colorChoice.value!=null && vm.colorChoice.value!!>=0) {
-                val priorChoice = binding.palette.getChildAt(vm.colorChoice.value!!) as Button
-                priorChoice.isClickable = true
+                val priorChoice = binding.palette.getChildAt(vm.colorChoice.value!!) as MaterialButton
+                priorChoice.isEnabled = true
                 priorChoice.text = ""
             }
             vm.colorChoiceValue = thisChoiceIx

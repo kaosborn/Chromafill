@@ -1,5 +1,5 @@
 package com.chromafill
-
+import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -9,10 +9,11 @@ import com.kaosborn.gridgames.CellGrid
 class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
     private lateinit var grid:CellGrid
     lateinit var gameColors:List<Int>; private set
+    val defGameSize = 8
     val maxGameSize = 20
     val xRoot = 0
     val yRoot = 0
-    private var isSettingsDirty = true
+    private var isSettingsDirty = false
 
     private val _isGameActive = MutableLiveData(false)
     val isGameActive:LiveData<Boolean> = _isGameActive
@@ -34,7 +35,7 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
             isSettingsDirty = false
         }
 
-    private val _boardSize = MutableLiveData(14)
+    private val _boardSize = MutableLiveData(1)
     val boardSize:LiveData<Int> = _boardSize
     var boardSizeValue
         get() = _boardSize.value!!
@@ -149,6 +150,21 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
         private const val ENUMS_KEY_PREFIX = "ENUMS_"
     }
 
+    fun savePrefs (prefs:SharedPreferences) {
+        with (prefs.edit()) {
+            putInt (BOARD_SIZE_KEY, _boardSize.value!!)
+            putInt (HIGH_SCORE_KEY, if (isSettingsDirty) 0 else _highScore.value!!)
+            putInt (LOW_MOVES_KEY, if (isSettingsDirty) -1 else _lowMoves.value!!)
+            apply()
+        }
+    }
+
+    fun loadPrefs (prefs:SharedPreferences) {
+        _boardSize.value = prefs.getInt(BOARD_SIZE_KEY, defGameSize)
+        _highScore.value = prefs.getInt(HIGH_SCORE_KEY, 0)
+        _lowMoves.value = prefs.getInt(LOW_MOVES_KEY,-1)
+    }
+
     fun loadColors (colors:IntArray) {
         gameColors = colors.toList()
         state[COLORS_KEY] = colors
@@ -168,8 +184,8 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
         grid = CellGrid (boardSizeValue,boardSizeValue)
         grid.randomize (gameColors.size)
         grid.crawl4 (xRoot,yRoot,grid.at(xRoot,yRoot))
-        movesValue = 0
         scoreValue = calcPoints(grid.maxEnumeration)
+        movesValue = 0
         isGameActiveValue = true
         isGameActiveValue = ! grid.isConstant()
     }
@@ -177,8 +193,8 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
     private fun calcPoints (tileCount:Int) = tileCount * (tileCount + 1)
 
     fun fill (thisChoiceIx:Int): Int {
-        movesValue++
         scoreValue += calcPoints (grid.flood4 (xRoot,yRoot,thisChoiceIx))
+        movesValue++
         return grid.maxEnumeration
     }
 }
