@@ -9,8 +9,8 @@ import com.kaosborn.gridgames.CellGrid
 class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
     private lateinit var grid:CellGrid
     lateinit var gameColors:List<Int>; private set
-    val defGameSize = 8
-    val maxGameSize = 20
+    val defGameSize = 14
+    val maxGameSize = 14
     val xRoot = 0
     val yRoot = 0
     private var isSettingsDirty = false
@@ -24,8 +24,10 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
                 return
 
             if (value) {
-                if (isSettingsDirty)
+                if (isSettingsDirty) {
+                    highScoreValue = 0
                     lowMovesValue = -1
+                }
             }
             else if (isMonochrome())
                 if (lowMovesValue<0 || movesValue in 0..<lowMovesValue)
@@ -180,14 +182,14 @@ class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
     fun isMonochrome() = grid.isConstant()
 
     fun initGame() {
-        isGameActiveValue = false
         grid = CellGrid (boardSizeValue,boardSizeValue)
         grid.randomize (gameColors.size)
         grid.crawl4 (xRoot,yRoot,grid.at(xRoot,yRoot))
-        scoreValue = calcPoints(grid.maxEnumeration)
+        scoreValue = calcPoints (grid.maxEnumeration)
         movesValue = 0
         isGameActiveValue = true
-        isGameActiveValue = ! grid.isConstant()
+        if (grid.isConstant())
+            isGameActiveValue = false
     }
 
     private fun calcPoints (tileCount:Int) = tileCount * (tileCount + 1)
