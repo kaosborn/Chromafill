@@ -1,8 +1,7 @@
-package com.chromafill
-
+package kaosborn.chromafill
 import org.junit.Test
 import org.junit.Assert.*
-import com.kaosborn.gridgames.*
+import kaosborn.gridgames.*
 
 class GridTests {
     @Test

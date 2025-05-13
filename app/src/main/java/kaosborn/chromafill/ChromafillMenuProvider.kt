@@ -1,5 +1,4 @@
-package com.chromafill
-
+package kaosborn.chromafill
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -9,15 +8,15 @@ import android.widget.NumberPicker
 import androidx.core.view.MenuProvider
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-open class ChromofillMenuProvider (private val view:View, private val vm:GridGamesViewModel) : MenuProvider {
+open class ChromafillMenuProvider (private val view:View, private val vm:GridGamesViewModel) : MenuProvider {
     override fun onCreateMenu (menu:Menu, menuInflater:MenuInflater) {
-        menuInflater.inflate (R.menu.menu_chromofill, menu)
+        menuInflater.inflate (R.menu.menu_chromafill, menu)
     }
 
     override fun onMenuItemSelected (menuItem:MenuItem): Boolean {
         when (menuItem.itemId) {
-            R.id.action_chromofill_menu -> {
-                val dlg = View.inflate (view.context, R.layout.settings_chromofill, null)
+            R.id.action_chromafill_menu -> {
+                val dlg = View.inflate (view.context, R.layout.settings_chromafill, null)
 
                 val newGameButton = dlg.findViewById<Button> (R.id.new_game_btn)
                 newGameButton.setOnClickListener { vm.initGame() }

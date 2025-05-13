@@ -1,4 +1,4 @@
-package com.kaosborn.gridgames
+package kaosborn.gridgames
 
 class CellGrid() {
     private var data:MutableList<IntArray> = mutableListOf()

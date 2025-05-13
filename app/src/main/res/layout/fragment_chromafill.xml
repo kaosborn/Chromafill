@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <import type="android.view.View" />
-        <variable name="pvm" type="com.chromafill.GridGamesViewModel" />
+        <variable name="pvm" type="kaosborn.chromafill.GridGamesViewModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView

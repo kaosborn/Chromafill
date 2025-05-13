@@ -1,4 +1,4 @@
-## Chromofill
+## Chromafill
 
 This project is a work in progress.
 The contents are an Android Studio project that is a collection of tile-based games.

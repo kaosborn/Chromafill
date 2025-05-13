@@ -1,10 +1,10 @@
-package com.chromafill
+package kaosborn.chromafill
 import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.kaosborn.gridgames.CellGrid
+import kaosborn.gridgames.CellGrid
 
 class GridGamesViewModel (private val state:SavedStateHandle) : ViewModel() {
     private lateinit var grid:CellGrid

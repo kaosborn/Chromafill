@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.chromafill"
+    namespace = "kaosborn.chromafill"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.chromafill"
+        applicationId = "kaosborn.chromafill"
         minSdk = 31
         targetSdk = 34
         versionCode = 1

@@ -1,4 +1,4 @@
-package com.chromafill
+package kaosborn.chromafill
 import android.content.Context
 import android.os.Bundle
 import android.view.Menu
@@ -9,7 +9,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.chromafill.databinding.ActivityMainBinding
+import kaosborn.chromafill.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfig: AppBarConfiguration

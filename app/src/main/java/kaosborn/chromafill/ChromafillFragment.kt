@@ -1,4 +1,4 @@
-package com.chromafill
+package kaosborn.chromafill
 import android.animation.ArgbEvaluator
 import android.animation.ObjectAnimator.*
 import android.os.Bundle
@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.button.MaterialButton
-import com.chromafill.databinding.FragmentChromafillBinding
+import kaosborn.chromafill.databinding.FragmentChromafillBinding
 
 class ChromafillFragment : Fragment() {
     private var _binding:FragmentChromafillBinding? = null
@@ -33,7 +33,7 @@ class ChromafillFragment : Fragment() {
     override fun onViewCreated (view:View, state:Bundle?) {
         super.onViewCreated (view, state)
 
-        requireActivity().addMenuProvider (ChromofillMenuProvider(view,vm), viewLifecycleOwner, Lifecycle.State.RESUMED)
+        requireActivity().addMenuProvider (ChromafillMenuProvider(view,vm), viewLifecycleOwner, Lifecycle.State.RESUMED)
 
         binding.buttonReset.setOnClickListener {
             vm.initGame()

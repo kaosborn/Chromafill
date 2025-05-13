@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/HomeFragment"
-        android:name="com.chromafill.HomeFragment"
+        android:name="kaosborn.chromafill.HomeFragment"
         android:label="@string/home_fragment_label"
         tools:layout="@layout/fragment_home">
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/ChromafillFragment"
-        android:name="com.chromafill.ChromafillFragment"
+        android:name="kaosborn.chromafill.ChromafillFragment"
         android:label="@string/chromafill_fragment_label"
         tools:layout="@layout/fragment_chromafill">
         <action
