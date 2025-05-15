@@ -15,17 +15,17 @@ class GridTests {
         assertEquals (5, b35.xSize)
         assertEquals (3, b35.ySize)
         assertEquals (1, b35.at(4,1))
-        assertTrue (b35.isEquals (a35b))
+        assertTrue (b35.isEqual (a35b))
         assertEquals ("2 0 2 0 1\n2 2 2 0 1\n2 0 0 0 1", b35.toString())
     }
 
     @Test
     fun gridTest_ctor_with_vals() {
         val grid = CellGrid (1,1)
-        assertTrue (grid.isEquals (a11a))
+        assertTrue (grid.isEqual (a11a))
 
         grid.flood4 (0,0,1)
-        assertTrue (grid.isEquals ((a11b)))
+        assertTrue (grid.isEqual ((a11b)))
 
         assertEquals ("1", grid.toString())
     }
@@ -85,10 +85,10 @@ class FloodTests {
     @Test
     fun floodTest_35c() {
         val grid2 = CellGrid (a35a)
-        assertTrue (grid2.isEquals (a35a))
+        assertTrue (grid2.isEqual (a35a))
 
         grid2.flood4 (1,1,2)
-        assertTrue (grid2.isEquals ((a35b)))
+        assertTrue (grid2.isEqual ((a35b)))
     }
 
     val axx22a = mutableListOf (intArrayOf(0,1), intArrayOf(1,0))

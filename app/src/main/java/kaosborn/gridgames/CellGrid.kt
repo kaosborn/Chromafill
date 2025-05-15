@@ -77,7 +77,7 @@ class CellGrid() {
             }
     }
 
-    fun isEquals (rval:MutableList<IntArray>): Boolean {
+    fun isEqual (rval:MutableList<IntArray>): Boolean {
         if (rval.size!=data.size)
             return false
         for (y in data.indices) {
