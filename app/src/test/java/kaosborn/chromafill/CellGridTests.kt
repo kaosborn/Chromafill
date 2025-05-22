@@ -3,7 +3,7 @@ import org.junit.Test
 import org.junit.Assert.*
 import kaosborn.gridgames.*
 
-class GridTests {
+class CellGridTests {
     @Test
     fun gridTest_values() {
         val g12 = CellGrid (1,2)
@@ -29,20 +29,23 @@ class GridTests {
 
         assertEquals ("1", grid.toString())
     }
-}
 
-val a11a = mutableListOf (intArrayOf ( 0 ))
-val a11b = mutableListOf (intArrayOf ( 1 ))
+    val a11a = mutableListOf (intArrayOf ( 0 ))
+    val a11b = mutableListOf (intArrayOf ( 1 ))
 
-val a22a = mutableListOf (intArrayOf ( 0,1 ), intArrayOf ( 0,0 ))
-val a22b = mutableListOf (intArrayOf ( 2,1 ), intArrayOf ( 2,2 ))
+    val a22a = mutableListOf (intArrayOf ( 0,1 ), intArrayOf ( 0,0 ))
+    val a22b = mutableListOf (intArrayOf ( 2,1 ), intArrayOf ( 2,2 ))
 
-val a35a = mutableListOf (
-    intArrayOf ( 1,0,1,0,1 ),
-    intArrayOf ( 1,1,1,0,1 ),
-    intArrayOf ( 1,0,0,0,1 ))
+    val a35a = mutableListOf (
+        intArrayOf ( 1,0,1,0,1 ),
+        intArrayOf ( 1,1,1,0,1 ),
+        intArrayOf ( 1,0,0,0,1 ))
 
-class FloodTests {
+    val a35b = mutableListOf (
+        intArrayOf ( 2,0,2,0,1 ),
+        intArrayOf ( 2,2,2,0,1 ),
+        intArrayOf ( 2,0,0,0,1 ))
+
     @Test
     fun floodTest_11a() {
         val grid00 = CellGrid (a11b)
@@ -99,8 +102,3 @@ class FloodTests {
         assertEquals(0,g3.at(0,0))
     }
 }
-
-val a35b = mutableListOf (
-    intArrayOf ( 2,0,2,0,1 ),
-    intArrayOf ( 2,2,2,0,1 ),
-    intArrayOf ( 2,0,0,0,1 ))

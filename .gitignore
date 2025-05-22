@@ -1,6 +1,5 @@
-.gradle
-/.idea/caches/
-/.idea/libraries
+/.gradle/
+/.idea/caches/deviceStreaming.xml
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
@@ -9,7 +8,7 @@
 /.idea/deploymentTargetSelector.xml
 /.idea/vcs.xml
 /app/build/
+/local.properties
 ExampleUnitTest.kt
 ExampleInstrumentedTest.kt
-local.properties
 *.tmp
